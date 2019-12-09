@@ -3,18 +3,11 @@ package stepdefinition;
 
 import com.test.helpers.KEYS;
 import com.test.utilities.DriverUtils;
-import com.test.utilities.ScreenShotUtils;
 import com.test.utilities.ThisRun;
-import cucumber.api.Scenario;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 
 import java.io.FileInputStream;
@@ -22,27 +15,34 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class RunCucumberTest extends AbstractTestNGCucumberTests {
+    private static Logger logger = LogManager.getLogger(RunCucumberTest.class.getName());
+
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
         return super.scenarios();
     }
 
-    private ThisRun thisRun  = ThisRun.getInstance();
-    private static Logger logger = LogManager.getLogger(RunCucumberTest.class.getName());
-    DriverUtils driverUtils;
-    WebDriver driver;
+    private ThisRun thisRun = ThisRun.getInstance();
+    private DriverUtils driverUtils;
+
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
     @io.cucumber.java.Before
-    public void setup() throws IOException {
-       // logger.info("Running scenario : "+ scenario.getName());
+    public void setUp() throws IOException {
         loadFromPropertiesFile();
-        addDriverProperties();
-       logger.debug("----------------Driver value------------" + driver);
+        driverUtils = new DriverUtils(thisRun.getAsString(KEYS.BROWSER.name()));
+        driver.set(driverUtils.getDriver());
+        getDriver().get(thisRun.getAsString(KEYS.APP_URL.name()));
+    }
 
+    @io.cucumber.java.After
+    public void teardown() {
+        getDriver().quit();
     }
 
     private void loadFromPropertiesFile() throws IOException {
+        logger.info("Loading common properties..");
         FileInputStream fileStream =
                 new FileInputStream(thisRun.get(KEYS.TEST_RESOURCES.toString()) + "/CommonProperties.properties");
         Properties commonProperties = new Properties();
@@ -51,18 +51,9 @@ public class RunCucumberTest extends AbstractTestNGCucumberTests {
         thisRun.add(KEYS.APP_URL, commonProperties.getProperty(KEYS.APP_URL.toString()));
     }
 
-    private void addDriverProperties() {
-        driverUtils = new DriverUtils(thisRun.getAsString(KEYS.BROWSER.toString()));
-        driver = driverUtils.getDriver();
-        thisRun.add(KEYS.DRIVER, driver);
+    public WebDriver getDriver() {
+        //Get driver from ThreadLocalMap
+        return driver.get();
     }
 
-    @io.cucumber.java.After
-     public void tearDown() {
-        logger.info("Inside teardown(), now Browser will quit.....");
-        logger.debug("----------------Driver value------------" + driver);
-
-        //ScreenShotUtils.embedScreenShotInReport(scenario, scenario.getName());
-        driverUtils.quitBrowser();
-    }
 }

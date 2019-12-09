@@ -18,7 +18,9 @@ import java.util.Map;
 
 public class DriverUtils {
 
-    private WebDriver driver;
+    private  WebDriver driver;
+
+    private static WebDriver driverToReturn;
 
     private ThisRun thisRun = ThisRun.getInstance();
 
@@ -26,6 +28,7 @@ public class DriverUtils {
     public String browser;
 
     public DriverUtils(String browser) {
+        logger.info("Driver Utils intialized");
         this.browser = browser;
     }
 
@@ -35,12 +38,21 @@ public class DriverUtils {
 
         System.setProperty("webdriver.chrome.driver", thisRun.getAsString(KEYS.TEST_RESOURCES.toString())+"/"+driverToBeLoaded);
         driver = new ChromeDriver();
-        driver.get(thisRun.getAsString(KEYS.APP_URL.toString()));
-        driver.manage().window().fullscreen();
+        //driver(thisRun.getAsString(KEYS.APP_URL.toString()));
+        //driver.manage().window().fullscreen();
+       // driverToReturn = driver;
         return driver;
     }
 
-    private WebDriver instantiateFireFoxDriver() {
+   /* public WebDriver getDriverFromUtils() {
+        return driver.get();
+    }*/
+
+    public WebDriver getDriverValue() {
+        return driverToReturn;
+    }
+
+   /* private WebDriver instantiateFireFoxDriver() {
         String driverToBeLoaded = thisRun.getAsString(KEYS.OS_NAME.toString()).contains("Windows") ? "geckodriver_win.exe": "geckodriver_mac.exe";
 
         System.setProperty("webdriver.gecko.driver", thisRun.getAsString(KEYS.TEST_RESOURCES.toString())+"/"+driverToBeLoaded);
@@ -48,7 +60,7 @@ public class DriverUtils {
         driver.get(thisRun.getAsString(KEYS.APP_URL.toString()));
         driver.manage().window().fullscreen();
         return driver;
-    }
+    }*/
 
       private DesiredCapabilities getBrowserCapabilities(String browserType) {
         switch (browserType) {
@@ -66,15 +78,15 @@ public class DriverUtils {
         }
     }
 
-    public WebDriver instantiateMobileEmulatorDriver()  {
+    /*public WebDriver instantiateMobileEmulatorDriver()  {
 
          String driverToBeLoaded = thisRun.getAsString(KEYS.OS_NAME.toString()).contains("Windows") ? "chromedriver_win.exe": "chromedriver_mac";
          System.setProperty("webdriver.chrome.driver", thisRun.getAsString(KEYS.TEST_RESOURCES.toString())+"/"+driverToBeLoaded);
 
-         driver = new ChromeDriver(setChromeOptions());
+        driver = new ChromeDriver(setChromeOptions());
          driver.get(thisRun.getAsString(KEYS.APP_URL.toString()));
          return driver;
-     }
+     }*/
 
      private List<String> addChromeArguments() {
          List<String> chromeArguments = new ArrayList<>();
@@ -113,12 +125,12 @@ public class DriverUtils {
     public WebDriver getDriver() {
         logger.info("Instantiating Driver for browser: "+browser);
         switch (browser.toLowerCase()) {
-            case "mobileemulator":
-                return instantiateMobileEmulatorDriver();
+       //     case "mobileemulator":
+       //         return instantiateMobileEmulatorDriver();
             case "chrome":
-                return instantiateChromeDriver();
-            case "firefox":
-                return instantiateFireFoxDriver();
+                 return instantiateChromeDriver();
+       //     case "firefox":
+        //        return instantiateFireFoxDriver();
              default:
                  throw new InvalidArgumentException("Invalid browser type");
         }
@@ -126,7 +138,7 @@ public class DriverUtils {
 
 
 
-    public void quitBrowser() {
-        driver.quit();
-    }
+    /*public void quitBrowser() {
+        getDriverFromUtils().quit();
+    }*/
 }

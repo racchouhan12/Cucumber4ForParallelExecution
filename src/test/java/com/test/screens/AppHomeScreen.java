@@ -1,6 +1,8 @@
 package com.test.screens;
 
 
+import org.openqa.selenium.By;
+
 public class AppHomeScreen extends BaseScreen {
 
     public static AppHomeScreen getInstance() {
@@ -11,4 +13,9 @@ public class AppHomeScreen extends BaseScreen {
         return getCurrentURL();
 
     }
+
+    public void clickOnSignIn() {
+         clickOnElement(By.xpath("//a[text()='Sign in']"));
+    }
+
 }

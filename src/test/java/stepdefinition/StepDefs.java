@@ -26,4 +26,9 @@ public class StepDefs {
     public void verifyWebsite(){
         new AppHome().verifyHomeScreenIsOpen();
     }
+
+    @Then("I signIn in Gmail$")
+    public void signIn(){
+        new AppHome().verifyGmailScreenIsOpen();
+    }
 }
