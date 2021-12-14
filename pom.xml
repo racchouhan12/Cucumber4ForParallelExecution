@@ -14,7 +14,7 @@
      <selenium.java.version>3.13.0</selenium.java.version>
      <selenium.server.version>3.13.0</selenium.server.version>
      <selenium.chromedriver.version>3.13.0</selenium.chromedriver.version>
-     <log4j.reporting.version>2.15.0</log4j.reporting.version>
+     <log4j.reporting.version>2.16.0</log4j.reporting.version>
 
     </properties>
 
